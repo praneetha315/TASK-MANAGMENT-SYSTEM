@@ -1,0 +1,19 @@
+const router = require("express").Router();
+const Project = require("../models/Project");
+const auth = require("../middleware/auth");
+const role = require("../middleware/role");
+
+router.post("/", auth, role("admin"), async (req, res) => {
+  const project = await Project.create({
+    ...req.body,
+    createdBy: req.user.id
+  });
+  res.json(project);
+});
+
+router.get("/", auth, async (req, res) => {
+  const projects = await Project.find().populate("members");
+  res.json(projects);
+});
+
+module.exports = router;
